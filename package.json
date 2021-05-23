@@ -18,6 +18,8 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
+    "querystring": "^0.2.1",
+    "svg-mixer": "^2.3.14",
     "svg-sprite": "^1.5.0"
   }
 }
