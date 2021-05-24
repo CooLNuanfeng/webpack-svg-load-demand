@@ -1,14 +1,15 @@
-// const mixer = require('svg-mixer');
-const SVGSpriter = require('svg-sprite'); 
+const mixer = require('svg-mixer');
+// const SVGSpriter = require('svg-sprite'); 
 const path = require('path')
 const qs = require('querystring')
+const fs = require('fs')
 
 // const mapSvgJson = {}
 const catchArr = []
 
 module.exports = function(source, map, meta){
   console.log('=======loader==========')
-  // var callback = this.async();
+  var callback = this.async();
   // console.log('resource', this.resource)
   // console.log('resourceQuery', this.resourceQuery)
   
@@ -17,23 +18,62 @@ module.exports = function(source, map, meta){
   var reg = new RegExp(`${option.entry}\\/(\\w+)`);
   let match = this.resource.match(reg)
 
+  const context = this.rootContext || process.cwd()
+  const sourceRoot = path.dirname(path.relative(context, this.resourcePath))
+  const filename = path.basename(this.resourcePath)
+  console.log('context',context);
+  console.log('sourceRoot',sourceRoot)
+  console.log('filename',filename);
+
   if(resquery.vue !== undefined 
     && match[1] 
     && !catchArr.includes(match[1])
   ){
     catchArr.push(match[1])
-    console.log('match',this.resource)
-
-    let spriter = new SVGSpriter({
-      mode: {
-        symbol: true
-      }
-    });
-    //查找文件下的所有svg
-    let fsPath = path.resolve(option.root,option.entry,option.path)
-    console.log('fsPath',fsPath)
+    console.log('match[1]',match[1])
+    let fsPath = path.resolve(option.root,option.entry,option.path, match[1])
     let files = fs.readdirSync(fsPath)
     console.log('files', files)
+    console.log('fsPath',fsPath)
+
+    var svgFiles = files.map(item => {
+      return path.resolve(fsPath, item)
+    });
+    console.log('svgFiles', svgFiles)
+    mixer(svgFiles).then(result => {
+      console.log(result.content)
+      // return 
+      callback(null, `module.exports = {'svg': ${result.content}}`, map, meta)
+    })
+
+    // let spriter = new SVGSpriter({
+    //   mode: {
+    //     symbol: true
+    //   }
+    // });
+    // //查找文件下的所有svg
+    // files.forEach(item => {
+    //   if(item){
+    //     console.log(path.resolve(fsPath, item))
+    //     spriter.add( path.resolve(fsPath, item), null, fs.readFileSync(path.resolve(fsPath, item)), { encoding: 'utf-8' })
+        
+    //   }
+    // })
+
+    // spriter.compile(function(error, result) {
+    //   for (var mode in result) {
+    //       for (var resource in result[mode]) {
+    //           // fs.mkdirSync(path.dirname(result[mode][resource].path), { recursive: true });
+    //           // fs.writeFileSync(result[mode][resource].path, result[mode][resource].contents);
+    //           console.log('path=>',result[mode][resource].path)
+    //           console.log('result=>',result[mode][resource].contents.toString())
+    //           // callback(null, '', map, meta)
+    //       }
+    //   }
+    // });
+
+
+    // return source
     
   }
 
