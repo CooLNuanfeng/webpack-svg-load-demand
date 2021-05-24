@@ -35,7 +35,7 @@ module.exports = function(source, map, meta){
     let files = fs.readdirSync(fsPath)
     console.log('files', files)
     console.log('fsPath',fsPath)
-
+    // this.addDependency(headerPath);
     var svgFiles = files.map(item => {
       return path.resolve(fsPath, item)
     });
@@ -43,8 +43,10 @@ module.exports = function(source, map, meta){
     mixer(svgFiles).then(result => {
       console.log(result.content)
       // return 
-      callback(null, `module.exports = {'svg': ${result.content}}`, map, meta)
+      callback(null, result.content, map, meta)
     })
+
+    // return;
 
     // let spriter = new SVGSpriter({
     //   mode: {
