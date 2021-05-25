@@ -1,5 +1,5 @@
-const mixer = require('svg-mixer');
-// const SVGSpriter = require('svg-sprite'); 
+// const mixer = require('svg-mixer');
+const SVGSpriter = require('svg-sprite'); 
 const path = require('path')
 const qs = require('querystring')
 const fs = require('fs')
@@ -10,9 +10,7 @@ const catchArr = []
 module.exports = function(source, map, meta){
   console.log('=======loader==========')
   var callback = this.async();
-  // console.log('resource', this.resource)
-  // console.log('resourceQuery', this.resourceQuery)
-  
+  console.log('resourceQuery', this.resourceQuery)
   let resquery =  qs.parse(this.resourceQuery.slice(1))
   let option = this.query;
   var reg = new RegExp(`${option.entry}\\/(\\w+)`);
@@ -21,32 +19,41 @@ module.exports = function(source, map, meta){
   const context = this.rootContext || process.cwd()
   const sourceRoot = path.dirname(path.relative(context, this.resourcePath))
   const filename = path.basename(this.resourcePath)
-  console.log('context',context);
-  console.log('sourceRoot',sourceRoot)
-  console.log('filename',filename);
-
-  if(resquery.vue !== undefined 
-    && match[1] 
-    && !catchArr.includes(match[1])
-  ){
+  console.log('resquery.vue',resquery.vue);
+  console.log('match[1]',match[1])
+  console.log('catchArr',catchArr.includes(match[1]));
+  console.log(resquery.vue !== undefined && match[1] && !catchArr.includes(match[1]) )
+  if(match[1] && !catchArr.includes(match[1])){
     catchArr.push(match[1])
     console.log('match[1]',match[1])
     let fsPath = path.resolve(option.root,option.entry,option.path, match[1])
     let files = fs.readdirSync(fsPath)
     console.log('files', files)
     console.log('fsPath',fsPath)
-    // this.addDependency(headerPath);
-    var svgFiles = files.map(item => {
-      return path.resolve(fsPath, item)
+    let spriter = new SVGSpriter({
+      mode: {
+        symbol: true
+      }
     });
-    console.log('svgFiles', svgFiles)
-    mixer(svgFiles).then(result => {
-      console.log(result.content)
-      // return 
-      callback(null, result.content, map, meta)
-    })
+    // this.addDependency(headerPath);
+    files.forEach(item => {
+      // this.addDependency(path.resolve(fsPath, item));
+      console.log(path.resolve(fsPath, item))
+      spriter.add(path.resolve(fsPath, item), null, fs.readFileSync(path.resolve(fsPath, item), {encoding: 'utf-8'}));
+    });
 
-    // return;
+    spriter.compile(function(error, result) {
+      if(error) callback(error)
+      for (var mode in result) {
+        for (var resource in result[mode]) {
+          console.log('result path', result[mode][resource].path)
+          console.log('result content', result[mode][resource].contents.toString())
+          callback(null, `eval(appendBody(${result[mode][resource].contents.toString()}))`, result[mode][resource].contents);
+        }
+      }
+    });
+  }
+
 
     // let spriter = new SVGSpriter({
     //   mode: {
@@ -76,8 +83,7 @@ module.exports = function(source, map, meta){
 
 
     // return source
-    
-  }
+  
 
 
 
@@ -169,7 +175,7 @@ module.exports = function(source, map, meta){
   //     );
   //   })
   // }
-  return source;
+  // return source;
 }
 
 module.exports.pitch = function(remainingRequest, precedingRequest, data){
@@ -210,21 +216,25 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data){
 }
 
 
-function myReadfile(MyUrl) {
-  fs.readdir(MyUrl, (err, files) => {
-      if (err) throw err
-      files.forEach(file => {
-          //拼接获取绝对路径，fs.stat(绝对路径,回调函数)
-          let fPath = path.join(MyUrl, file);
-          fs.stat(fPath, (err, stat) => {
-              if (stat.isFile()) {
-                  //stat 状态中有两个函数一个是stat中有isFile ,isisDirectory等函数进行判断是文件还是文件夹
-                  console.log(file)
-              }
-              else {
-                  myReadfile(fPath)
-              }
-          })
-      })
-  })
+// function myReadfile(MyUrl) {
+//   fs.readdir(MyUrl, (err, files) => {
+//       if (err) throw err
+//       files.forEach(file => {
+//           //拼接获取绝对路径，fs.stat(绝对路径,回调函数)
+//           let fPath = path.join(MyUrl, file);
+//           fs.stat(fPath, (err, stat) => {
+//               if (stat.isFile()) {
+//                   //stat 状态中有两个函数一个是stat中有isFile ,isisDirectory等函数进行判断是文件还是文件夹
+//                   console.log(file)
+//               }
+//               else {
+//                   myReadfile(fPath)
+//               }
+//           })
+//       })
+//   })
+// }
+
+function appendBody(svgStr){
+  return `document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','${svgStr}')`
 }
