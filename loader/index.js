@@ -20,13 +20,16 @@ module.exports = function(source, map, meta){
   const sourceRoot = path.dirname(path.relative(context, this.resourcePath))
   const filename = path.basename(this.resourcePath)
   console.log('resquery.vue',resquery.vue);
+  console.log('resourcePath', this.resourcePath)
+  console.log('sourceRoot',sourceRoot);
+  console.log('filename', filename)
   console.log('match[1]',match[1])
-  console.log('catchArr',catchArr.includes(match[1]));
-  console.log(resquery.vue !== undefined && match[1] && !catchArr.includes(match[1]) )
-  if(match[1] && !catchArr.includes(match[1])){
+  console.log('catchArr', catchArr)
+  let fsPath = path.resolve(option.root,option.entry,option.path, match[1])
+  if(match[1] && !catchArr.includes(match[1]) && fs.existsSync(fsPath)){
     catchArr.push(match[1])
     console.log('match[1]',match[1])
-    let fsPath = path.resolve(option.root,option.entry,option.path, match[1])
+    
     let files = fs.readdirSync(fsPath)
     console.log('files', files)
     console.log('fsPath',fsPath)
@@ -48,12 +51,18 @@ module.exports = function(source, map, meta){
         for (var resource in result[mode]) {
           console.log('result path', result[mode][resource].path)
           console.log('result content', result[mode][resource].contents.toString())
-          callback(null, `eval(appendBody(${result[mode][resource].contents.toString()}))`, result[mode][resource].contents);
+          /* 
+            `(function(){
+            document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','${result[mode][resource].contents.toString()}')
+          })())`
+          */
+          callback(null, source);
         }
       }
     });
   }
 
+  return
 
     // let spriter = new SVGSpriter({
     //   mode: {
@@ -234,7 +243,3 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data){
 //       })
 //   })
 // }
-
-function appendBody(svgStr){
-  return `document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','${svgStr}')`
-}
