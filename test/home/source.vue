@@ -1,8 +1,8 @@
 <template>
 <div>
   <h1 class="red">hello</h1>
-  <p><svg-icon icon-class="zan" class-name="zan"></svg-icon>{{msg}}</p>
-  <p><svg-icon icon-class="safe" class-name="safe"></svg-icon>{{msg}}</p>
+  <p><svg-icon svg-path="assets/home/zan.svg" icon-class="zan" class-name="zan"></svg-icon>{{msg}}</p>
+  <p><svg-icon svg-path="assets/home/safe.svg" class-name="safe"></svg-icon>{{msg}}</p>
 </div>
 </template>
 
