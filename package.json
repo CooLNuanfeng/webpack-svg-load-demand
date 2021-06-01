@@ -4,7 +4,8 @@
   "description": "webpack svg sprite load on demand ",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -w"
+    "dev": "webpack -w",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",

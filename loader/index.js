@@ -8,6 +8,8 @@ const fs = require('fs')
 const catchArr = []
 
 module.exports = function(source, map, meta){
+  return source
+  /*
   console.log('=======loader==========')
   var callback = this.async();
   console.log('resourceQuery', this.resourceQuery)
@@ -42,6 +44,7 @@ module.exports = function(source, map, meta){
     files.forEach(item => {
       // this.addDependency(path.resolve(fsPath, item));
       console.log(path.resolve(fsPath, item))
+      // spriter.add(path.resolve(fsPath, item), null, fs.readFileSync(path.resolve(fsPath, item), {encoding: 'utf-8'}));
       spriter.add(path.resolve(fsPath, item), null, fs.readFileSync(path.resolve(fsPath, item), {encoding: 'utf-8'}));
     });
 
@@ -51,18 +54,20 @@ module.exports = function(source, map, meta){
         for (var resource in result[mode]) {
           console.log('result path', result[mode][resource].path)
           console.log('result content', result[mode][resource].contents.toString())
-          /* 
-            `(function(){
+          
+          callback(null, `(function(){
             document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','${result[mode][resource].contents.toString()}')
-          })())`
-          */
-          callback(null, source);
+          })())`, map, meta);
         }
       }
     });
   }
 
   return
+  
+  */
+
+
 
     // let spriter = new SVGSpriter({
     //   mode: {
