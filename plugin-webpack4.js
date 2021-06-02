@@ -9,8 +9,8 @@ class SvgSpriteLoadByDemand {
   }
   apply(compiler){
     compiler.hooks.compilation.tap('SvgSpriteLoadByDemand',(compilation)=>{
-      compilation.hooks.optimizeChunkAssets.tapAsync('SvgSpriteLoadByDemand',
-        (chunks, callback) => {
+      compilation.hooks.afterOptimizeChunkAssets.tap('SvgSpriteLoadByDemand',
+        (chunks) => {
           chunks.forEach(chunk => {
             chunk.files.forEach(file => {
               let content = new ConcatSource(compilation.assets[file]).source();
@@ -42,10 +42,8 @@ class SvgSpriteLoadByDemand {
                   }
                 
                   compilation.assets[file] = new ConcatSource(content,appendContent)
-                  callback()
+                  
                 });
-              }else{
-                callback()
               }
               
             });
