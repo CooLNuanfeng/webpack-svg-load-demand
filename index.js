@@ -14,7 +14,6 @@ class SvgSpriteLoadByDemand {
           stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
         },
         (assets) => {
-
           let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
           Object.entries(assets).forEach(([pathname, source]) => {
             // console.log(pathname)
@@ -62,6 +61,5 @@ class SvgSpriteLoadByDemand {
     
   }
 }
-
 
 module.exports = SvgSpriteLoadByDemand

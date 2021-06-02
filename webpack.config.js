@@ -26,11 +26,6 @@ module.exports = {
       },
     ]
   },
-  // resolveLoader: {
-  //   alias: {
-  //     'vue-svg-loader': path.resolve(__dirname,'./loader/index.js')
-  //   }
-  // },
   plugins: [
     new VueLoaderPlugin(),
     new WebpackSvgLoadDemand({entryRoot: './test'}),
