@@ -1,6 +1,6 @@
-
-// const fs = require('fs')
-// const path = require('path')
+const SVGSpriter = require('svg-sprite'); 
+const path = require('path')
+const fs = require('fs');
 
 class SvgSpriteLoadByDemand {
   constructor(options){
@@ -8,55 +8,60 @@ class SvgSpriteLoadByDemand {
   }
   apply(compiler){
 
-    // compiler.hooks.thisCompilation.tap('svgSpritePlugin', (compilation)=>{
-    //   compilation.hooks.processAssets.tap('assets',(assets)=>{
-    //     console.log(assets)
-    //   })
-    // })
+    compiler.hooks.compilation.tap('SvgSpriteLoadByDemand',(compilation)=>{
+      compilation.hooks.processAssets.tap({
+          name: 'SvgSpriteLoadByDemand',
+          stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+        },
+        (assets) => {
 
-    // compiler.hooks.watchRun.tapAsync('svgSpritePlugin',(compiler, callback)=>{
-    //   // optimization:
-    //   console.log(compiler.module)
-    // })
-    // compiler.hooks.run.tap('run', () => {
-    //   console.log('开始编译...')
-    // })
+          let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
+          Object.entries(assets).forEach(([pathname, source]) => {
+            // console.log(pathname)
+            let content = source.source()
+            let spriter = new SVGSpriter({
+              mode: {
+                symbol: true
+              }
+            });
+            var reg = /\\"svg-path\\": \\"(.*?)\\"/g
+       
+            let svgFiles = content.match(reg) || []
+            let appendContent = ''
+            svgFiles.forEach(item => {
+              var pathJson = JSON.parse(`{${item.replace(/\\/g,'')}}`);
 
-    // compiler.hooks.compile.tap('compile', () => {
-    //   console.log('===> compile')
-    // })
-
-    // compiler.hooks.done.tap('compilation', () => {
-    //   console.log('===> compilation')
-    // })
+              spriter.add(path.resolve(fsPath, pathJson['svg-path']), null, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}));
+            });
+        
+            spriter.compile(function(error, result) {
+              if(error) console.log(error)
+              for (var mode in result) {
+                for (var resource in result[mode]) {
+                  appendContent = `;(function(){
+                    document.getElementById('_svg_sprites_demand_wrap_') && document.getElementById('_svg_sprites_demand_wrap_').remove()
+                    document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none" id="_svg_sprites_demand_wrap_">${result[mode][resource].contents.toString()}</div>')
+                  })();`
+                }
+              }
+            });
+            compilation.assets[pathname] = {
+              // 返回文件内容
+              source: () => {
+                return content + appendContent
+              },
+              // 返回文件大小
+              size: () => {
+                return Buffer.byteLength(content + appendContent, 'utf8')
+              },
+            }
+          });
+        }
+      );
+    })
+    
   }
 }
-
-// console.log('file==>',findAllDir(path.resolve("./test/assets/")))
-
-// function findAllDir(filePath) {
-//   const stack = [filePath];
-//   console.log('stack',stack)
-//   const res = [];
-//   while (stack.length > 0) {
-//     const _path = stack.shift();
-//     const files = fs.readdirSync(_path);
-//     files.forEach(function(filename) {
-//       const _filePath = path.join(_path, filename);
-//       const stats = fs.statSync(_filePath);
-//       if (stats.isDirectory()) {
-//         stack.unshift(_filePath);
-//       } else if (stats.isFile() && isSvg(_filePath)) {
-//         res.push(_path);
-//       }
-//     });
-//   }
-//   return res.slice(1);
-// }
-
-// function isSvg(filePath) {
-//   return /svg/g.test(path.extname(filePath));
-// }
 
 
 module.exports = SvgSpriteLoadByDemand

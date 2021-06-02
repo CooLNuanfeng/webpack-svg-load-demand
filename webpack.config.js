@@ -15,18 +15,9 @@ module.exports = {
       // { loader: require.resolve('./debugger') },
       {
         test: /\.vue$/,
-        use: 'vue-loader'
-      },
-      {
-        test: /\.svg$/,
-        use: [{
-          loader: path.resolve(__dirname,'./loader/index.js'),
-          options: {
-            path: '/assets',
-            modules: true,
-          }
-        }]
-
+        use: [
+          'vue-loader',
+        ]
       },
       // example configuring CSS Modules
       {
@@ -35,8 +26,13 @@ module.exports = {
       },
     ]
   },
+  // resolveLoader: {
+  //   alias: {
+  //     'vue-svg-loader': path.resolve(__dirname,'./loader/index.js')
+  //   }
+  // },
   plugins: [
     new VueLoaderPlugin(),
-    new WebpackSvgLoadDemand({name:'WebpackSvgLoadDemand'}),
+    new WebpackSvgLoadDemand({entryRoot: './test'}),
   ]
 }

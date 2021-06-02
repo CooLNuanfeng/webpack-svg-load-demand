@@ -1,10 +1,11 @@
 {
-  "name": "webpack-svg-load-demand",
+  "name": "webpack-svg-sprite-load-demand",
   "version": "1.0.0",
   "description": "webpack svg sprite load on demand ",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -w"
+    "dev": "webpack -w",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +19,6 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
-    "svg-mixer": "^2.3.14",
     "svg-sprite": "^1.5.0"
   }
 }
