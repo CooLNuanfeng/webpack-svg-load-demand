@@ -1,24 +1,18 @@
 <template>
 <div>
   <h1 class="red">hello</h1>
-  <p><svg-icon icon-class="zan" class-name="zan"></svg-icon>{{msg}}</p>
-  <p><svg-icon icon-class="safe" class-name="safe"></svg-icon>{{msg}}</p>
+  <p><svg-icon class="svg-icon" svg-path="assets/home/zan.svg" link="zan"></svg-icon>zan</p>
+  <p><svg-icon svg-path="assets/home/safe.svg" link="safe"></svg-icon>safe</p>
 </div>
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      msg: 'bbb'
-    }
-  }
-}
 </script>
 
 <style>
-.red {
-  color: red;
+.svg-icon{
+  width: 50px;
+  height: 50px;
 }
 </style>
 
