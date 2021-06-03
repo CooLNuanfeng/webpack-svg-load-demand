@@ -28,3 +28,34 @@ This is a webpack plug-in that generates svg sprite on demand. It is currently i
   Take vue.config.js in vue cli as an example
 
 
+  vue.config.js
+
+  ```
+    const WebpackSvgLoadDemand = require('webpack-svg-sprite-load-demand');
+    module.exports = {
+      configureWebpack: config => {
+         config.plugins = [
+          ...config.plugins,
+          new WebpackSvgLoadDemand({
+            entryRoot: './src'
+          }),
+        ]
+      }
+    }
+  ```
+
+  global SFC svg-icon
+
+  ```
+    <template functional>
+      <svg aria-hidden="true">
+        <use :xlink:href="`#${props.xlink}`"/>
+      </svg>
+    </template>
+  ```
+
+  template
+
+  ```
+    <svg-icon class="svg-icon" svg-path="assets/svgs/test/safe.svg" xlink="safe"></svg-icon>
+  ```

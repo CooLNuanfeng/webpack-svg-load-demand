@@ -28,5 +28,37 @@
 
   以 vue cli 里 vue.config.js为例
 
+  vue.config.js
+
+  ```
+    const WebpackSvgLoadDemand = require('webpack-svg-sprite-load-demand');
+    module.exports = {
+      configureWebpack: config => {
+         config.plugins = [
+          ...config.plugins,
+          new WebpackSvgLoadDemand({
+            entryRoot: './src'
+          }),
+        ]
+      }
+    }
+  ```
+
+  全局svg-icon组件
+
+  ```
+    <template functional>
+      <svg aria-hidden="true">
+        <use :xlink:href="`#${props.xlink}`"/>
+      </svg>
+    </template>
+  ```
+
+  template
+
+  ```
+    <svg-icon class="svg-icon" svg-path="assets/svgs/test/safe.svg" xlink="safe"></svg-icon>
+  ```
+
 
 
