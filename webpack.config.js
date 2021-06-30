@@ -3,7 +3,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const WebpackSvgLoadDemand = require('./index') 
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: path.resolve(__dirname, './test/main.js'),
   output: {
     path: path.resolve(__dirname, './test/dist'),

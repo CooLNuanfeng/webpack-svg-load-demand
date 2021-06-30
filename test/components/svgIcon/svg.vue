@@ -1,17 +1,5 @@
-<template>
-  <svg aria-hidden="true">
-    <use :xlink:href="`#${link}`"/>
+<template functional>
+  <svg aria-hidden="true" :class="props.className">
+    <use :xlink:href="`#${props.xlink}`"/>
   </svg>
 </template>
-
-<script>
-export default {
-  name: 'SvgIcon',
-  props: {
-    link: {
-      type: String,
-      required: true
-    },
-  },
-}
-</script>

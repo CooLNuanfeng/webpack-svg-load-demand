@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Foo from './home/source.vue'
 
-import './components/svgIcon/index'
+import SvgIcon from './components/svgIcon/index'
+
+
+Vue.config.productionTip = false
+Vue.use(SvgIcon)
 
 
 new Vue({
