@@ -8,12 +8,12 @@ class SvgSpriteLoadByDemand {
   }
   apply(compiler){
     compiler.hooks.compilation.tap('SvgSpriteLoadByDemand',(compilation)=>{
-      compilation.hooks.afterOptimizeChunkAssets.tap('SvgSpriteLoadByDemand',
-        (chunks) => {
+      compilation.hooks.optimizeChunkAssets.tapAsync('SvgSpriteLoadByDemand',
+        (chunks,callback) => {
           chunks.forEach(chunk => {
-            chunk.files.forEach(async file => {
+            chunk.files.forEach(file => {
               let content = new ConcatSource(compilation.assets[file]).source();
-              var reg = compiler.options.mode === 'production' ? /"svg-path":"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
+              var reg = compiler.options.mode === 'production' ? /"svg-path":(\s?)"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
               if(reg.test(content)){
                 let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)  
                 
@@ -24,15 +24,14 @@ class SvgSpriteLoadByDemand {
                   
                 });
                 let appendContent = ''
-                console.log(111111)
-                const result = await mixer(svgFiles)
-                console.log(2222222)
-                appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${result.content}</div>')})();`;
-                console.log(appendContent)
-                compilation.assets[file] = new ConcatSource(
-                  content,
-                  appendContent,
-                );
+                mixer(svgFiles).then(result => {
+                  appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${result.content}</div>')})();`;
+                  compilation.assets[file] = new ConcatSource(
+                    content,
+                    appendContent,
+                  );
+                  callback()
+                })
                 
               }
             });
