@@ -1,4 +1,5 @@
-const SVGSpriter = require('svg-sprite'); 
+var Svgstore = require('svgstore'); 
+const ConcatSource = require('webpack-sources').ConcatSource
 const path = require('path')
 const fs = require('fs');
 
@@ -9,51 +10,26 @@ class SvgSpriteLoadByDemand {
   apply(compiler){
 
     compiler.hooks.compilation.tap('SvgSpriteLoadByDemand',(compilation)=>{
-      compilation.hooks.processAssets.tap({
-          name: 'SvgSpriteLoadByDemand',
-          stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
-        },
+      compilation.hooks.afterOptimizeAssets.tap('SvgSpriteLoadByDemand',
         (assets) => {
           let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
           Object.entries(assets).forEach(([pathname, source]) => {
             var reg = compiler.options.mode === 'production' ? /"svg-path":"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
             let content = source.source()
             if(reg.test(content)){
-              let spriter = new SVGSpriter({
-                mode: {
-                  symbol: true
-                }
-              });
+              let spriter = Svgstore()
          
               let svgFiles = content.match(reg) || []
-              let appendContent = ''
               svgFiles.forEach(item => {
                 var pathJson = JSON.parse(`{${item.replace(/\\/g,'')}}`);
-  
-                spriter.add(path.resolve(fsPath, pathJson['svg-path']), null, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}));
+                let nameReg = /(.*\/)*([^.]+).*/
+                let id = pathJson['svg-path'].match(nameReg)[2]
+                spriter.add(id, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}),{cleanDefs: true});
               });
           
-              spriter.compile(function(error, result) {
-                if(error) console.log(error)
-                for (var mode in result) {
-                  for (var resource in result[mode]) {
-                    //document.getElementById('_svg_sprites_demand_wrap_') && document.getElementById('_svg_sprites_demand_wrap_').remove()
-                    appendContent = `;(function(){
-                      document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${result[mode][resource].contents.toString()}</div>')
-                    })();`
-                  }
-                }
-              });
-              compilation.assets[pathname] = {
-                // 返回文件内容
-                source: () => {
-                  return content + appendContent
-                },
-                // 返回文件大小
-                size: () => {
-                  return Buffer.byteLength(content + appendContent, 'utf8')
-                },
-              }
+              let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();`
+
+              compilation.assets[pathname] = new ConcatSource(appendContent,content)
             }
           });
         }

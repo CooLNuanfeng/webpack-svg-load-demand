@@ -4,8 +4,8 @@
   "description": "webpack svg sprite load on demand ",
   "main": "./index.js",
   "scripts": {
-    "dev": "webpack -w",
-    "build": "webpack"
+    "dev": "webpack -w --mode=development",
+    "build": "webpack --mode=production"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,6 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "svg-sprite": "^1.5.0"
+    "svgstore": "^3.0.0-2"
   }
 }
