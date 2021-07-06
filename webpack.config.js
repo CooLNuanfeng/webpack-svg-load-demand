@@ -10,7 +10,6 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/dist/'
   },
-  // devtool: 'eval-source-map',
   module: {
     rules: [
       // { loader: require.resolve('./debugger') },

@@ -11,8 +11,9 @@ class SvgSpriteLoadByDemand {
       compilation.hooks.processAssets.tapAsync({
           name: 'SvgSpriteLoadByDemand',
           stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+          additionalAssets: true
         },
-        (assets, callack) => {
+        (assets, callback) => {
           let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
           Object.entries(assets).forEach(([pathname, source]) => {
             var reg = compiler.options.mode === 'production' ? /"svg-path":(\s?)"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
@@ -38,9 +39,9 @@ class SvgSpriteLoadByDemand {
                     return Buffer.byteLength(content + appendContent, 'utf8')
                   },
                 }
-
-                callack()
+                callback()
               })
+              
             }
           })
         }
