@@ -12,7 +12,6 @@ module.exports = {
   },
   module: {
     rules: [
-      // { loader: require.resolve('./debugger') },
       {
         test: /\.vue$/,
         use: [
