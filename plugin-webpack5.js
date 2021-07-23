@@ -27,7 +27,7 @@ class SvgSpriteLoadByDemand {
                 spriter.add(id, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}),{cleanDefs: true});
               });
           
-              let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();`
+              let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();\n`
 
               compilation.assets[pathname] = new ConcatSource(appendContent,content)
             }
