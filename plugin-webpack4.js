@@ -13,7 +13,7 @@ class SvgSpriteLoadByDemand {
         (chunks) => {
           chunks.forEach(chunk => {
             chunk.files.forEach(file => {
-              let content = new ConcatSource(compilation.assets[file]).source();
+              let content = new ConcatSource(compilation.assets[file]).sourceAndMap();
               var reg = compiler.options.mode === 'production' ? /"svg-path":"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
               if(reg.test(content)){
                 let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
@@ -27,7 +27,7 @@ class SvgSpriteLoadByDemand {
                   spriter.add(id, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}),{cleanDefs: true});
                 });
                 // console.log(compilation.assets[file])
-                let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();\n`
+                let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();\n\n`
                 
                 compilation.assets[file] = new ConcatSource(appendContent,content)
               }
