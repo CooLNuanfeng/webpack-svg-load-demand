@@ -1,6 +1,6 @@
 {
   "name": "webpack-svg-sprite-load-demand",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "webpack svg sprite load on demand ",
   "main": "./index.js",
   "scripts": {
