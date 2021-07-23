@@ -1,5 +1,5 @@
 var Svgstore = require('svgstore'); 
-const ConcatSource = require('webpack-sources').ConcatSource
+const { SourceMapSource } = require('webpack-sources')
 const path = require('path')
 const fs = require('fs');
 
@@ -15,8 +15,8 @@ class SvgSpriteLoadByDemand {
           let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
           Object.entries(assets).forEach(([pathname, source]) => {
             var reg = compiler.options.mode === 'production' ? /"svg-path":"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
-            let content = source.sourceAndMap().source
-            
+            let sourceAndMap = source.sourceAndMap()
+            let content = sourceAndMap.source
             if(reg.test(content)){
               let spriter = Svgstore()
          
@@ -30,7 +30,7 @@ class SvgSpriteLoadByDemand {
           
               let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();\n\n`
 
-              compilation.assets[pathname] = new ConcatSource(appendContent,content)
+              compilation.assets[pathname] = new SourceMapSource(appendContent + content,sourceAndMap.map );
             }
           });
         }
