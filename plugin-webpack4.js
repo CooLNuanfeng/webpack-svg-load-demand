@@ -26,7 +26,7 @@ class SvgSpriteLoadByDemand {
                   let id = pathJson['svg-path'].match(nameReg)[2]
                   spriter.add(id, fs.readFileSync(path.resolve(fsPath, pathJson['svg-path']), {encoding: 'utf-8'}),{cleanDefs: true});
                 });
-                // console.log(compilation.assets[file])
+                
                 let appendContent = `;(function(){document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend','<div style="display:none">${spriter.toString()}</div>')})();\n\n`
                 
                 compilation.assets[file] = new ConcatSource(appendContent,content)

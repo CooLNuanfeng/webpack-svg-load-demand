@@ -15,7 +15,8 @@ class SvgSpriteLoadByDemand {
           let fsPath = path.resolve(compiler.options.context, this.options.entryRoot)
           Object.entries(assets).forEach(([pathname, source]) => {
             var reg = compiler.options.mode === 'production' ? /"svg-path":"(.*?)"/g : /\\"svg-path\\": \\"(.*?)\\"/g
-            let content = source.sourceAndMap()
+            let content = source.sourceAndMap().source
+            
             if(reg.test(content)){
               let spriter = Svgstore()
          
